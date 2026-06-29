@@ -8,4 +8,6 @@ public interface AuthService{
     LoginResponseDto login(LoginRequest request);
 
     String signUp(SignUpRequest request);
+
+    LoginResponseDto refresh(LoginRequest request);
 }

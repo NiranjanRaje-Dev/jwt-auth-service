@@ -31,5 +31,10 @@ public class AuthController {
         return new ResponseEntity<>(authService.login(request), HttpStatus.OK);
     }
 
+    @PostMapping("/refresh")
+    public ResponseEntity<LoginResponseDto> refresh(@RequestBody LoginRequest request){
+        return new ResponseEntity<>(authService.refresh(request), HttpStatus.OK);
+    }
+
 
 }
