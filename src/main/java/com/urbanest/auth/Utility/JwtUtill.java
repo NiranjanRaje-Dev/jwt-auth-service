@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class JwtUtill {
@@ -24,11 +26,18 @@ public class JwtUtill {
     public String generateAccessToken(User user){
         return Jwts.builder()
                 .subject(user.getUsername())
-                .claim("userId",user.getId().toString())
+                .claims(getClaims(user))
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 10))
                 .signWith(getSecretKey())
                 .compact();
+    }
+
+    private Map<String,?> getClaims(User user) {
+        Map<String,Object> claims = new HashMap<>();
+        claims.put("userId",user.getId().toString());
+        claims.put("tokenVersion",user.getTokenVersion().toString());
+        return claims;
     }
 
     public static String getUserName(String bearerToken) {
@@ -39,6 +48,16 @@ public class JwtUtill {
                 .getBody();
 
         return body.getSubject();
+    }
+
+    public static Long getTokenVersion(String bearerToken) {
+        Claims claims = Jwts.parser()
+                .verifyWith(getSecretKey())
+                .build()
+                .parseSignedClaims(bearerToken)
+                .getPayload();
+
+        return claims.get("tokenVersion", Long.class);
     }
 
     public static Boolean isTokenExpired(String token){

@@ -57,6 +57,7 @@ public class AuthServiceImpl implements AuthService{
             newUser.setMobileNumber(request.getMobileNumber());
             newUser.setEmail(request.getEmail());
             newUser.setPassword(passwordEncoder.encode(request.getPassword()));
+            newUser.setTokenVersion(1L);
             userRepo.save(newUser);
             return "User Registered";
         }

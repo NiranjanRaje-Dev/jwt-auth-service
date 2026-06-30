@@ -26,6 +26,9 @@ public class User implements UserDetails {
     @Column(name = "password")
     private String password;
 
+    @Column(name = "token_version")
+    private Long tokenVersion;
+
     // Getters and Setters -
 
     public Long getId() {
@@ -68,6 +71,15 @@ public class User implements UserDetails {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public Long getTokenVersion() {
+        return tokenVersion;
+    }
+
+    public void setTokenVersion(Long tokenVersion) {
+        this.tokenVersion = tokenVersion;
+    }
+
     // Overridden Methods -
 
     @Override

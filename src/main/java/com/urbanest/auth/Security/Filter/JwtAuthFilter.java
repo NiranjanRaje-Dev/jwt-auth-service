@@ -37,11 +37,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
         String bearerToken = token.split("Bearer ")[1];
         String username = JwtUtill.getUserName(bearerToken);
+        Long tokenVersion = JwtUtill.getTokenVersion(bearerToken);
 
-        if(username != null && SecurityContextHolder.getContext().getAuthentication() != null){
+        if(username != null && SecurityContextHolder.getContext().getAuthentication() == null){
             Optional<User> user = userRepo.findByUsername(username);
-            if(user.isPresent() && JwtUtill.isTokenExpired(token)){
-                UsernamePasswordAuthenticationToken contextToken = new UsernamePasswordAuthenticationToken(user,null,user.get().getAuthorities());
+            if(user.isPresent() && !JwtUtill.isTokenExpired(bearerToken) && tokenVersion.equals(user.get().getTokenVersion())){
+                UsernamePasswordAuthenticationToken contextToken = new UsernamePasswordAuthenticationToken(user.get(),null,user.get().getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(contextToken);
             }
         }
