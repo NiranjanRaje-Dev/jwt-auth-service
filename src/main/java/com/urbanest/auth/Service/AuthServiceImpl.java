@@ -8,6 +8,7 @@ import com.urbanest.auth.Payloads.SignUpRequest;
 import com.urbanest.auth.Repository.TokenRepository;
 import com.urbanest.auth.Repository.UserRepository;
 import com.urbanest.auth.Utility.JwtUtill;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -75,6 +76,33 @@ public class AuthServiceImpl implements AuthService{
             tokenRepo.delete(token.get());
         }
         return null;
+    }
+
+    @Override
+    @Transactional
+    public String logout(LoginRequest request) {
+        Optional<AuthToken> token = tokenRepo.findByRefreshToken(request.getRefreshToken());
+        if(token.isPresent()){
+            User user = token.get().getUser();
+            user.setTokenVersion(user.getTokenVersion() + 1);
+            userRepo.save(user);
+            tokenRepo.delete(token.get());
+            return "User Logged Out Successfully";
+        }
+        throw new RuntimeException("Invalid refresh token");
+    }
+
+    @Override
+    public String logoutAllDevices(LoginRequest request) {
+        Optional<AuthToken> token = tokenRepo.findByRefreshToken(request.getRefreshToken());
+        if(token.isPresent()){
+            User user = token.get().getUser();
+            user.setTokenVersion(user.getTokenVersion() + 1);
+            userRepo.save(user);
+            tokenRepo.deleteAllByUser(user);
+            return "User Logged Out of all devices Successfully";
+        }
+        throw new RuntimeException("Invalid refresh token");
     }
 
 

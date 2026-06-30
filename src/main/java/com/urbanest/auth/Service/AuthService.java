@@ -10,4 +10,8 @@ public interface AuthService{
     String signUp(SignUpRequest request);
 
     LoginResponseDto refresh(LoginRequest request);
+
+    String logout(LoginRequest request);
+
+    String logoutAllDevices(LoginRequest request);
 }
